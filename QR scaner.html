@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Barcode / QR Scanner</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{
+  margin:0;
+  background:#0a66ff;
+  font-family:Arial;
+  color:white;
+  text-align:center;
+}
+.container{
+  max-width:420px;
+  margin:auto;
+  padding:15px;
+}
+#reader{
+  width:100%;
+  border-radius:12px;
+  overflow:hidden;
+  background:#000;
+}
+.card{
+  background:white;
+  color:#333;
+  padding:15px;
+  border-radius:12px;
+  margin-top:15px;
+}
+button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border:none;
+  border-radius:8px;
+  background:#0a66ff;
+  color:white;
+  font-size:16px;
+}
+.result{
+  word-break:break-all;
+  font-size:14px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Scan Barcode / QR</h2>
+
+  <!-- CAMERA SCAN -->
+  <div id="reader"></div>
+
+  <!-- IMPORT GALERI -->
+  <div class="card">
+    <input type="file" accept="image/*" id="fileInput">
+    <button onclick="scanImage()">Scan dari Galeri</button>
+  </div>
+
+  <!-- RESULT -->
+  <div class="card">
+    <b>Hasil:</b>
+    <div id="result" class="result">-</div>
+  </div>
+</div>
+
+<!-- LIBRARY -->
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<script>
+const resultBox = document.getElementById("result");
+
+// CAMERA SCAN
+const scanner = new Html5Qrcode("reader");
+scanner.start(
+  { facingMode: "environment" },
+  { fps: 10, qrbox: 250 },
+  text => handleResult(text),
+  err => {}
+);
+
+// HANDLE RESULT
+function handleResult(text){
+  resultBox.innerText = text;
+
+  // Jika URL → langsung buka
+  if(text.startsWith("http")){
+    window.location.href = text;
+  }
+}
+
+// SCAN FROM IMAGE
+function scanImage(){
+  const file = document.getElementById("fileInput").files[0];
+  if(!file) return alert("Pilih gambar dulu");
+
+  Html5Qrcode.scanFile(file, true)
+    .then(text => handleResult(text))
+    .catch(() => alert("Barcode tidak terbaca"));
+}
+</script>
+
+</body>
+</html>
